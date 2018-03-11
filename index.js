@@ -3,7 +3,7 @@ const express = require('express');
 const session = require('express-session');
 const ejs = require('ejs');
 const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
+const LocalStrategy = require('passport-local-generic').Strategy;
 const HttpForbidden = require('./lib/error/http/forbidden');
 const bodyParser = require("body-parser");
 
@@ -24,15 +24,18 @@ module.exports = function (config) {
 		});
 
 		passport.use(new LocalStrategy({
-				usernameField: 'email',
-				passwordFiled: 'password'
+				fields: ['customer', 'email', 'password']
 			},
-			function (email, password, done) {
-				if (email === 'akayami@gmail.com' && password === 'test') {
-					return done(null, {id: 1});
-				} else {
-					return done(null, false, {message: 'Incorrect Login'});
-				}
+			function (cred, done) {
+				config.authenticate(cred, (err, result) => {
+					if(err) {
+						return done(null)
+					} else if(result.success) {
+						return done(null, result.user);
+					} else {
+						return done(null, false, {message: 'Incorrect Login'});
+					}
+				});
 			}
 		));
 
@@ -67,7 +70,7 @@ module.exports = function (config) {
 		}
 
 		app.post(config.local.login.loginURL,
-			passport.authenticate('local', {
+			passport.authenticate('local-generic', {
 				successRedirect: '/sec/vt',
 				failureRedirect: '/login',
 				failureFlash: false
