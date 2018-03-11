@@ -28,10 +28,10 @@ module.exports = function (config) {
 			},
 			function (cred, done) {
 				config.authenticate(cred, (err, result) => {
-					if(err) {
+					if (err) {
 						return done(null)
-					} else if(result.success) {
-						return done(null, result.user);
+					} else if (result) {
+						return done(null, result);
 					} else {
 						return done(null, false, {message: 'Incorrect Login'});
 					}
