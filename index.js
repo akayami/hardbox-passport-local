@@ -70,11 +70,7 @@ module.exports = function (config) {
 		}
 
 		app.post(config.local.login.loginURL,
-			passport.authenticate('local-generic', {
-				successRedirect: '/sec/vt',
-				failureRedirect: '/login',
-				failureFlash: false
-			})
+			passport.authenticate('local-generic', config.passport.authenticate)
 		);
 
 		app.get(config.logoutURL, function (req, res, next) {
