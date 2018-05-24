@@ -27,13 +27,13 @@ module.exports = function (config) {
 				fields: ['customer', 'email', 'password']
 			},
 			function (cred, done) {
-				config.authenticate(cred, (err, result) => {
+				config.authenticate(cred, (err, result, message) => {
 					if (err) {
 						return done(null)
 					} else if (result) {
 						return done(null, result);
 					} else {
-						return done(null, false, {message: 'Incorrect Login'});
+						return done(null, false, message);
 					}
 				});
 			}
@@ -69,8 +69,12 @@ module.exports = function (config) {
 			})
 		}
 
-		app.post(config.local.login.loginURL,
-			passport.authenticate('local-generic', config.passport.authenticate)
+		app.post(
+			config.local.login.loginURL,
+			passport.authenticate(
+				'local-generic',
+				config.passport.authenticate(req, res)
+			)
 		);
 
 		app.get(config.logoutURL, function (req, res, next) {
