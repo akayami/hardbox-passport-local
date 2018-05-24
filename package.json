@@ -1,6 +1,6 @@
 {
   "name": "hardbox-passport-local",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Local Login Plugin for hardbox",
   "main": "index.js",
   "author": "Tomasz Rakowski",
