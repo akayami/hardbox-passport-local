@@ -9,58 +9,59 @@ const bodyParser = require("body-parser");
 
 module.exports = function (config) {
 
-	return function (req, res, cb) {
 
-		passport.serializeUser(function (user, done) {
-			done(null, user);
-		});
+	passport.serializeUser(function (user, done) {
+		done(null, user);
+	});
 
-		passport.deserializeUser(function (obj, done) {
-			if (!config.allowedDomains || config.allowedDomains.includes(obj.domain)) {
-				done(null, obj);
-			} else {
-				done(new HttpForbidden('Domain mismatch: ' + obj.domain + ' not in ' + config.allowedDomains))
-			}
-		});
-
-		passport.use(new LocalStrategy({
-				fields: ['customer', 'email', 'password']
-			},
-			function (cred, done) {
-				config.authenticate(cred, (err, result, message) => {
-					if (err) {
-						return done(null)
-					} else if (result) {
-						return done(null, result);
-					} else {
-						return done(null, false, message);
-					}
-				});
-			}
-		));
-
-		const app = express();
-
-		app.set('view engine', 'ejs');
-		app.use(morgan(config.morgan.format, config.morgan.options));
-		app.use(config.local.login.loginURL, bodyParser.urlencoded({extended: false}));
-
-
-		// This needs to be initialized before session (fugly)
-		if (config.session.storeConf) {
-			const sessionStore = require(config.session.storeConf.type)(session);
-			config.session.store = new sessionStore(config.session.storeConf.config);
+	passport.deserializeUser(function (obj, done) {
+		if (!config.allowedDomains || config.allowedDomains.includes(obj.domain)) {
+			done(null, obj);
+		} else {
+			done(new HttpForbidden('Domain mismatch: ' + obj.domain + ' not in ' + config.allowedDomains))
 		}
+	});
 
-		// Session must always start before passport.session
-		app.use(session(config.session));
+	passport.use(new LocalStrategy({
+			fields: ['customer', 'email', 'password']
+		},
+		function (cred, done) {
+			config.authenticate(cred, (err, result, message) => {
+				if (err) {
+					return done(null)
+				} else if (result) {
+					return done(null, result);
+				} else {
+					return done(null, false, message);
+				}
+			});
+		}
+	));
 
-		app.use(config.secureNamespace, passport.initialize());
-		app.use(config.secureNamespace, passport.session());
+	const app = express();
 
-		app.use(config.local.login.loginURL, passport.initialize());
-		app.use(config.local.login.loginURL, passport.session());
+	app.set('view engine', 'ejs');
+	app.use(morgan(config.morgan.format, config.morgan.options));
+	app.use(config.local.login.loginURL, bodyParser.urlencoded({extended: false}));
 
+
+	// This needs to be initialized before session (fugly)
+	if (config.session.storeConf) {
+		const sessionStore = require(config.session.storeConf.type)(session);
+		config.session.store = new sessionStore(config.session.storeConf.config);
+	}
+
+	// Session must always start before passport.session
+	app.use(session(config.session));
+
+	app.use(config.secureNamespace, passport.initialize());
+	app.use(config.secureNamespace, passport.session());
+
+	app.use(config.local.login.loginURL, passport.initialize());
+	app.use(config.local.login.loginURL, passport.session());
+
+
+	return function (req, res, cb) {
 
 		if (config.forwardLogin === false) {
 			app.get(config.loginURL, function (req, res, next) {
