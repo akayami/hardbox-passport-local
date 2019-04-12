@@ -29,7 +29,7 @@ module.exports = function (config) {
 			function (cred, done) {
 				config.authenticate(cred, (err, result) => {
 					if (err) {
-						return done(null)
+						return done(err)
 					} else if (result) {
 						return done(null, result);
 					} else {
@@ -42,7 +42,9 @@ module.exports = function (config) {
 		const app = express();
 
 		app.set('view engine', 'ejs');
-		app.use(morgan(config.morgan.format, config.morgan.options));
+		if(config.morgan) {
+			app.use(morgan(config.morgan.format, config.morgan.options));
+		}
 		app.use(config.local.login.loginURL, bodyParser.urlencoded({extended: false}));
 
 
@@ -102,7 +104,8 @@ module.exports = function (config) {
 
 		app.use(function (req, res, next) {
 			if (req.user) {
-				res.proxyHeaders.push([config.headerName, JSON.stringify(req.user)]);
+				res.setHeader(config.headerName, JSON.stringify(req.user));
+				//res.proxyHeaders.push([config.headerName, JSON.stringify(req.user)]);
 			}
 			cb(null, req, res);
 		});
