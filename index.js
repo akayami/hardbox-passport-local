@@ -7,21 +7,11 @@ const LocalStrategy = require('passport-local-generic').Strategy;
 const HttpForbidden = require('./lib/error/http/forbidden');
 const bodyParser = require("body-parser");
 
+const app = express();
+
 module.exports = function (config) {
 
 	return function (req, res, cb) {
-
-		passport.serializeUser(function (user, done) {
-			done(null, user);
-		});
-
-		passport.deserializeUser(function (obj, done) {
-			if (!config.allowedDomains || config.allowedDomains.includes(obj.domain)) {
-				done(null, obj);
-			} else {
-				done(new HttpForbidden('Domain mismatch: ' + obj.domain + ' not in ' + config.allowedDomains))
-			}
-		});
 
 		passport.use(new LocalStrategy({
 				fields: ['customer', 'email', 'password']
@@ -38,9 +28,24 @@ module.exports = function (config) {
 				});
 			}
 		));
-
-		const app = express();
-
+		
+		passport.serializeUser(function (user, done) {
+			console.debug('Serialize');
+			done(null, user);
+		});
+		
+		passport.deserializeUser(function (obj, done) {
+			console.debug('Deserialize');
+			done(null, obj);
+			// if (!config.allowedDomains || config.allowedDomains.includes(obj.domain)) {
+			// 	done(null, obj);
+			// } else {
+			// 	done(new HttpForbidden('Domain mismatch: ' + obj.domain + ' not in ' + config.allowedDomains))
+			// }
+		});
+		
+		app.set('trust proxy', 1);
+		app.use(require('cookie-parser')());
 		app.set('view engine', 'ejs');
 		if(config.morgan) {
 			app.use(morgan(config.morgan.format, config.morgan.options));
@@ -50,18 +55,35 @@ module.exports = function (config) {
 
 		// This needs to be initialized before session (fugly)
 		if (config.session.storeConf) {
+			console.debug('Initializing custom store');
 			const sessionStore = require(config.session.storeConf.type)(session);
 			config.session.store = new sessionStore(config.session.storeConf.config);
 		}
 
 		// Session must always start before passport.session
 		app.use(session(config.session));
-
+		
 		app.use(config.secureNamespace, passport.initialize());
 		app.use(config.secureNamespace, passport.session());
-
+		
 		app.use(config.local.login.loginURL, passport.initialize());
 		app.use(config.local.login.loginURL, passport.session());
+		
+		// app.use(config.secureNamespace, (req, res, next) => {
+		// 	console.debug('Secure Passport Initialize');
+		// 	passport.initialize()(req, res, );
+		// 	passport.session()(req, res);
+		// 	next();
+		// });
+		//
+		// app.use(config.local.login.loginURL, (req, res, next) => {
+		// 	console.debug('Login Passport Initialize');
+		// 	passport.initialize()(req, res);
+		// 	console.debug('* Login Passport Initialize')
+		// 	passport.session()(req, res);
+		// 	console.debug('*** Login Passport Initialize')
+		// 	next();
+		// });
 
 
 		if (config.forwardLogin === false) {
@@ -71,8 +93,11 @@ module.exports = function (config) {
 			})
 		}
 
-		app.post(config.local.login.loginURL,
-			passport.authenticate('local-generic', config.passport.authenticate)
+		app.post(
+			config.local.login.loginURL, (req, res) => {
+				console.debug('Running Passport Authenticate');
+				passport.authenticate('local-generic', config.passport.authenticate)(req, res);
+			}
 		);
 
 		app.get(config.logoutURL, function (req, res, next) {
@@ -84,9 +109,14 @@ module.exports = function (config) {
 
 		app.use(config.secureNamespace, function (req, res, next) {
 			if (!req.user) {
+				console.debug('No User Session');
+				console.debug('Unauthorized allowed: ', !config.allowUnauthorized !== true);
+				console.debug('Internal URL: ', !req.internalURL !== true);
 				if (config.allowUnauthorized !== true && req.internalURL !== true) {
+					console.debug('Redirecting...' + config.loginURL);
 					res.redirect(config.loginURL);
 				} else {
+					console.debug('Allow unauthorized access on - Letting through');
 					next();
 				}
 			} else {
@@ -103,6 +133,7 @@ module.exports = function (config) {
 		});
 
 		app.use(function (req, res, next) {
+			console.log('here');
 			if (req.user) {
 				res.setHeader(config.headerName, JSON.stringify(req.user));
 				//res.proxyHeaders.push([config.headerName, JSON.stringify(req.user)]);
