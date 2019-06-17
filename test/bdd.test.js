@@ -29,20 +29,20 @@ describe('BDD Tests', () => {
 		},
 		authenticate: (cred, cb) => {			// This is a plugable authentication function
 			if (cred.customer === 'fail') {
-				cb(null, false, {message: 'Incorrect Login'})
+				cb(null, false, {message: 'Incorrect Login'});
 			} else {
-				cb(null, {profile: 'Some User'})
+				cb(null, {profile: 'Some User'});
 			}
 		},
 		logoutURL: '/logout',			// Triggers logout sequence
 		loginURL: '/loginURL',			// Provides Login inteface
 		headerName: 'hdx-user'			// header name
-	}
+	};
 	
 	beforeEach((done) => {
-		let h = require('../index')(config);
+		const h = require('../index')(config);
 		
-		let handler = (req, res) => {
+		const handler = (req, res) => {
 			h(req, res, (err, req, res) => {
 				res.end();
 			});
@@ -51,7 +51,7 @@ describe('BDD Tests', () => {
 		ser1 = require('http').createServer(handler).listen(port, (err) => {
 			if (err) return done(err);
 			done();
-		})
+		});
 	});
 	
 	afterEach(() => {

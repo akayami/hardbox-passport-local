@@ -5,7 +5,7 @@ const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local-generic').Strategy;
 const HttpForbidden = require('./lib/error/http/forbidden');
-const bodyParser = require("body-parser");
+const bodyParser = require('body-parser');
 const app = express();
 
 module.exports = function (config) {
@@ -13,19 +13,19 @@ module.exports = function (config) {
 	//return function (req, res, cb) {
 
 	passport.use(new LocalStrategy({
-			fields: ['customer', 'email', 'password']
-		},
-		function (cred, done) {
-			config.authenticate(cred, (err, result) => {
-				if (err) {
-					return done(err)
-				} else if (result) {
-					return done(null, result);
-				} else {
-					return done(null, false, {message: 'Incorrect Login'});
-				}
-			});
-		}
+		fields: ['customer', 'email', 'password']
+	},
+	function (cred, done) {
+		config.authenticate(cred, (err, result) => {
+			if (err) {
+				return done(err);
+			} else if (result) {
+				return done(null, result);
+			} else {
+				return done(null, false, {message: 'Incorrect Login'});
+			}
+		});
+	}
 	));
 
 	passport.serializeUser(function (user, done) {
@@ -98,7 +98,7 @@ module.exports = function (config) {
 		app.get(config.loginURL, function (req, res, next) {
 			req.internalURL = true;
 			res.render('login');
-		})
+		});
 	}
 
 
@@ -155,6 +155,6 @@ module.exports = function (config) {
 			cb(null, req, res);
 		});
 
-		app(req, res)
-	}
+		app(req, res);
+	};
 };
