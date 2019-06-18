@@ -36,16 +36,9 @@ module.exports = function (config) {
 	passport.deserializeUser(function (obj, done) {
 		console.debug('Deserialize');
 		done(null, obj);
-		// if (!config.allowedDomains || config.allowedDomains.includes(obj.domain)) {
-		// 	done(null, obj);
-		// } else {
-		// 	done(new HttpForbidden('Domain mismatch: ' + obj.domain + ' not in ' + config.allowedDomains))
-		// }
 	});
 
 	app.set('trust proxy', 1);
-	// app.use(require('cookie-parser')());
-	// app.set('view engine', 'ejs');
 	if (config.morgan) {
 		app.use(morgan(config.morgan.format, config.morgan.options));
 	}
@@ -68,22 +61,6 @@ module.exports = function (config) {
 	app.use(config.local.login.loginURL, passport.initialize());
 	app.use(config.local.login.loginURL, passport.session());
 
-	// app.use(config.secureNamespace, (req, res, next) => {
-	// 	console.debug('Secure Passport Initialize');
-	// 	passport.initialize()(req, res, );
-	// 	passport.session()(req, res);
-	// 	next();
-	// });
-	//
-	// app.use(config.local.login.loginURL, (req, res, next) => {
-	// 	console.debug('Login Passport Initialize');
-	// 	passport.initialize()(req, res);
-	// 	console.debug('* Login Passport Initialize')
-	// 	passport.session()(req, res);
-	// 	console.debug('*** Login Passport Initialize')
-	// 	next();
-	// });
-
 
 	app.use((req, res, next) => {
 		req.session.views = (req.session.views || 0) + 1;
@@ -101,15 +78,7 @@ module.exports = function (config) {
 		});
 	}
 
-
 	app.post(config.local.login.loginURL, passport.authenticate('local-generic', config.passport.authenticate));
-
-	// app.post(
-	// 	config.local.login.loginURL, (req, res) => {
-	// 		console.debug('Running Passport Authenticate');
-	// 		passport.authenticate('local-generic', config.passport.authenticate)(req, res);
-	// 	}
-	// );
 
 	app.get(config.logoutURL, function (req, res, next) {
 		console.debug('Logout Handler');

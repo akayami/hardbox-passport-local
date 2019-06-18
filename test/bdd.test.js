@@ -2,7 +2,13 @@ const request = require('request');
 const http = require('http');
 const async = require('async');
 const {expect} = require('chai');
+const { Console } = require('console');
 let ser1, handler, port = 18081;
+
+
+console = new Console({ stdout: process.stdout, stderr: process.stderr });
+
+console = require('@akayami/console-level')(console, 'error');
 
 
 describe('BDD Tests', () => {
