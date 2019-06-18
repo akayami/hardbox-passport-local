@@ -16,7 +16,7 @@
     "redis": "^2.8.0"
   },
   "devDependencies": {
-    "@akayami/console-level": "^0.0.1",
+    "@akayami/console-level": "^0.0.4",
     "async": "^3.0.1",
     "chai": "^4.2.0",
     "cookie-parser": "^1.4.4",
