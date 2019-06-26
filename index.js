@@ -13,19 +13,19 @@ module.exports = function (config) {
 	//return function (req, res, cb) {
 
 	passport.use(new LocalStrategy({
-		fields: ['customer', 'email', 'password']
-	},
-	function (cred, done) {
-		config.authenticate(cred, (err, result) => {
-			if (err) {
-				return done(err);
-			} else if (result) {
-				return done(null, result);
-			} else {
-				return done(null, false, {message: 'Incorrect Login'});
-			}
-		});
-	}
+			fields: ['customer', 'email', 'password']
+		},
+		function (cred, done) {
+			config.authenticate(cred, (err, result) => {
+				if (err) {
+					return done(err);
+				} else if (result) {
+					return done(null, result);
+				} else {
+					return done(null, false, {message: 'Incorrect Login'});
+				}
+			});
+		}
 	));
 
 	passport.serializeUser(function (user, done) {
