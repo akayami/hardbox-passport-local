@@ -1078,6 +1078,14 @@ har-validator@~5.1.0:
     ajv "^6.5.5"
     har-schema "^2.0.0"
 
+hardbox-session@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/hardbox-session/-/hardbox-session-0.0.2.tgz#0507601f175eb17d0f17c9d927986f314609ca86"
+  integrity sha512-mayFXdNHVXVaSJXpJ1sh86W2QRDhCAdJfFJFB6Z739bw/8bKESre/Ajkx5sb0oAALYSfBS+DS6OtzdsO10p/vg==
+  dependencies:
+    express "^4.17.1"
+    express-session "^1.16.2"
+
 has-flag@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/has-flag/-/has-flag-3.0.0.tgz#b5d454dc2199ae225699f3467e5a07f3b955bafd"

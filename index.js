@@ -1,6 +1,5 @@
 const morgan = require('morgan');
 const express = require('express');
-const session = require('express-session');
 //const ejs = require('ejs');
 const passport = require('passport');
 const LocalStrategy = require('passport-local-generic').Strategy;
@@ -38,22 +37,8 @@ module.exports = function (config) {
 		done(null, obj);
 	});
 
-	app.set('trust proxy', 1);
-	if (config.morgan) {
-		app.use(morgan(config.morgan.format, config.morgan.options));
-	}
 	app.use(config.local.login.loginURL, bodyParser.urlencoded({extended: false}));
 
-
-	// This needs to be initialized before session (fugly)
-	if (config.session.storeConf) {
-		console.debug('Initializing custom store');
-		const sessionStore = require(config.session.storeConf.type)(session);
-		config.session.store = new sessionStore(config.session.storeConf.config);
-	}
-
-	// Session must always start before passport.session
-	app.use(session(config.session));
 
 	app.use(config.secureNamespace, passport.initialize());
 	app.use(config.secureNamespace, passport.session());
@@ -116,7 +101,6 @@ module.exports = function (config) {
 		});
 
 		app.use(function (req, res, next) {
-			console.log('here');
 			if (req.user) {
 				res.setHeader(config.headerName, JSON.stringify(req.user));
 				//res.proxyHeaders.push([config.headerName, JSON.stringify(req.user)]);

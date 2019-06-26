@@ -2,17 +2,17 @@ const request = require('request');
 const http = require('http');
 const async = require('async');
 const {expect} = require('chai');
-const { Console } = require('console');
+const {Console} = require('console');
 let ser1, handler, port = 18081;
 
 
-console = new Console({ stdout: process.stdout, stderr: process.stderr });
+console = new Console({stdout: process.stdout, stderr: process.stderr});
 
-console = require('@akayami/console-level')(console, 'error');
+console = require('@akayami/console-level')(console);
 
 
 describe('BDD Tests', () => {
-	
+
 	const login_path = '/login';
 
 	const config = {
@@ -44,27 +44,33 @@ describe('BDD Tests', () => {
 		loginURL: '/loginURL',			// Provides Login inteface
 		headerName: 'hdx-user'			// header name
 	};
-	
+
 	beforeEach((done) => {
 		const h = require('../index')(config);
-		
+
 		const handler = (req, res) => {
-			h(req, res, (err, req, res) => {
-				res.end();
+			require('hardbox-session')({
+				secret: 'keyboard cat',
+				resave: false,
+				saveUninitialized: true
+			})(req, res, (err, req, res) => {
+				h(req, res, (err, req, res) => {
+					res.end();
+				});
 			});
 		};
-		
+
 		ser1 = require('http').createServer(handler).listen(port, (err) => {
 			if (err) return done(err);
 			done();
 		});
 	});
-	
+
 	afterEach(() => {
 		if (ser1) ser1.close();
 	});
-	
-	
+
+
 	it('Login Success', (done) => {
 		async.series([
 			(cb) => {
@@ -87,7 +93,7 @@ describe('BDD Tests', () => {
 			done();
 		});
 	});
-	
+
 	it('Login Failed', (done) => {
 		async.series([
 			(cb) => {
@@ -110,7 +116,7 @@ describe('BDD Tests', () => {
 			done();
 		});
 	});
-	
+
 	it('No Login', (done) => {
 		async.series([
 			(cb) => {
@@ -128,7 +134,7 @@ describe('BDD Tests', () => {
 			done();
 		});
 	});
-	
+
 	it('Access Secure When Authorized', (done) => {
 		const j = require('request').jar();
 		const request = require('request').defaults({jar: j});
@@ -166,7 +172,7 @@ describe('BDD Tests', () => {
 			done();
 		});
 	});
-	
+
 	it('Login Failed Full Chain', (done) => {
 		async.series([
 			(cb) => {
