@@ -7,11 +7,11 @@ const HttpForbidden = require('./lib/error/http/forbidden');
 const bodyParser = require('body-parser');
 //const app = express();
 
-module.exports = (config, passport) => {
+module.exports = (app, passport, config) => {
 
 	//return function (req, res, cb) {
 
-	const app = express();
+	//const app = express();
 
 
 	passport.use(
@@ -90,7 +90,7 @@ module.exports = (config, passport) => {
 	// 	next();
 	// });
 
-	app.post(config.local.login.loginURL, passport.authenticate('local-generic', config.passport.authenticate));
+	app.post(config.local.login.loginURL, passport.authenticate('local-generic', config.auth_options));
 
 	// app.get(config.logoutURL, function (req, res, next) {
 	// 	console.debug('Logout Handler');
@@ -117,23 +117,23 @@ module.exports = (config, passport) => {
 	// 	}
 	// });
 
-	return function (req, res, cb) {
-		// app.use(function (err, req, res, next) {
-		// 	if (err instanceof HttpForbidden) {
-		// 		req.session.destroy();
-		// 		req.logout();
-		// 	}
-		// 	cb(err, req, res);
-		// });
-		//
-		// app.use(function (req, res, next) {
-		// 	if (req.user) {
-		// 		res.setHeader(config.headerName, JSON.stringify(req.user));
-		// 		//res.proxyHeaders.push([config.headerName, JSON.stringify(req.user)]);
-		// 	}
-		// 	cb(null, req, res);
-		// });
-		app(req, res);
-		cb(null, req, res);
-	};
+	// return function (req, res, cb) {
+	// 	// app.use(function (err, req, res, next) {
+	// 	// 	if (err instanceof HttpForbidden) {
+	// 	// 		req.session.destroy();
+	// 	// 		req.logout();
+	// 	// 	}
+	// 	// 	cb(err, req, res);
+	// 	// });
+	// 	//
+	// 	// app.use(function (req, res, next) {
+	// 	// 	if (req.user) {
+	// 	// 		res.setHeader(config.headerName, JSON.stringify(req.user));
+	// 	// 		//res.proxyHeaders.push([config.headerName, JSON.stringify(req.user)]);
+	// 	// 	}
+	// 	// 	cb(null, req, res);
+	// 	// });
+	// 	app(req, res);
+	// 	cb(null, req, res);
+	// };
 };
