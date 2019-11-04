@@ -14,7 +14,7 @@ console = require('@akayami/console-level')(console);
 
 describe('BDD Tests', () => {
 	
-	let testConfig = {
+	const testConfig = {
 		port: port,
 		login_path: '/auth/login',
 		failed_path: '/auth/failed',
