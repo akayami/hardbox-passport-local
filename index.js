@@ -13,6 +13,8 @@ module.exports = (app, passport, config) => {
 
 	//const app = express();
 
+	
+	//console.log(config);
 
 	passport.use(
 		new LocalStrategy(
@@ -60,6 +62,8 @@ module.exports = (app, passport, config) => {
 	// 	done(null, obj);
 	// });
 
+	//console.log(config.local.login.loginURL);
+	
 	app.use(config.local.login.loginURL, bodyParser.urlencoded({extended: false}));
 
 
@@ -91,7 +95,11 @@ module.exports = (app, passport, config) => {
 	// });
 
 	app.post(config.local.login.loginURL, passport.authenticate('local-generic', config.auth_options));
-
+	
+	
+	app.post(config.local.login.loginURL, (req, res, next) => {
+		res.end();
+	});
 	// app.get(config.logoutURL, function (req, res, next) {
 	// 	console.debug('Logout Handler');
 	// 	req.internalURL = true;

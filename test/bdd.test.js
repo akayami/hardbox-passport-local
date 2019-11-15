@@ -7,9 +7,9 @@ const express = require('express');
 let ser1, handler, port = 18081;
 
 
-console = new Console({stdout: process.stdout, stderr: process.stderr});
-
-console = require('@akayami/console-level')(console);
+// console = new Console({stdout: process.stdout, stderr: process.stderr});
+//
+// console = require('@akayami/console-level')(console);
 
 
 describe('BDD Tests', () => {
@@ -83,6 +83,7 @@ describe('BDD Tests', () => {
 					config: {
 						strategy: {
 							config:	{
+								name: 'passport-local',
 								fields: ['customer', 'email', 'password']
 							}
 						},
@@ -90,6 +91,7 @@ describe('BDD Tests', () => {
 						// 	fields: ['customer', 'email', 'password']
 						// },
 						authenticate: (credentials, cb) => {
+							//console.log('here', credentials);
 							if (credentials.customer === 'fail') {
 								cb(null, false, {message: 'Incorrect Login'});
 							} else {
@@ -110,6 +112,7 @@ describe('BDD Tests', () => {
 		});
 		
 		app.use((req, res, next) => {
+			console.log('Hitting empty');
 			res.status(200).end();
 			next();
 		});
