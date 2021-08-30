@@ -16,10 +16,12 @@ describe('BDD Tests', () => {
 	
 	const testConfig = {
 		port: port,
+		login_ui_url: '/loginURL',
 		login_path: '/auth/login',
 		failed_path: '/auth/failed',
 		secure_path: '/secure',
 		logout_path: '/auth/logout',
+		secure_default_path: '/secure/default',
 		cred_valid: true,
 	};
 	

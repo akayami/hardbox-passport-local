@@ -64,7 +64,7 @@ module.exports = {
 								}
 							},
 							authenticate: (credentials, cb) => {
-								//console.log(credentials);
+								console.log(credentials);
 								if (credentials.customer === 'fail') {
 									cb(null, false, {message: 'Incorrect Login'});
 								} else {
